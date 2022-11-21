@@ -9,6 +9,7 @@ export interface oneResult extends Document {
   url: string;
   jobDescription: string;
   compensation: string;
+  address: string;
 }
 
 const listingSchema = new Schema<oneResult>({
@@ -18,6 +19,7 @@ const listingSchema = new Schema<oneResult>({
   url: String,
   jobDescription: String,
   compensation: String,
+  address: String,
 });
 
 const Listing = mongoose.model("listings", listingSchema);

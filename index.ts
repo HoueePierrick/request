@@ -1,5 +1,7 @@
 // Used to download pages
 import request from "request-promise";
+// Alternative
+import axios from "axios";
 import cheerio from "cheerio";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -14,13 +16,25 @@ async function connectToMongoDB() {
   console.log("connected to mongodb");
 }
 
-const url = "https://sfbay.craigslist.org/sby/sof/7558943157.html";
+const url = "https://sfbay.craigslist.org/search/sby/sof#search=1~thumb~0~0";
 
 async function scrapeCraigsList() {
   try {
-    const htmlResult = await request.get(url);
+    const query: any = await request.get(url);
+    // console.log(query.response);
+    const htmlResult = query && query;
     // console.log(htmlResult);
-    const $ = cheerio.load(htmlResult);
+    const $ = await cheerio.load(htmlResult);
+    // console.log($(".cl-result-info"));
+    $(".cl-result-info").map((i, e) => {
+      console.log(i);
+      const title = $(e)
+        // .children(".title-blob")
+        // .children(".titlestring")
+        .find(".titlestring")
+        .text();
+      console.log(title);
+    });
   } catch (error: any) {
     console.log(error.message);
   }
