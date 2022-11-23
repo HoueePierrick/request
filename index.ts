@@ -16,28 +16,63 @@ async function connectToMongoDB() {
   console.log("connected to mongodb");
 }
 
-const url = "https://sfbay.craigslist.org/search/sby/sof#search=1~thumb~0~0";
+// Doesn't work on this URL as Craigslist detects that we'ren't using a browser
+// const url = "https://sfbay.craigslist.org/search/sby/sof#search=1~thumb~0~0";
 
-async function scrapeCraigsList() {
+const scrapeResults: any[] = [];
+const url2 = "https://bangkok.craigslist.org/search/jjj?areaAbb=bangkok";
+
+async function scrapeJobHeader() {
   try {
-    const query: any = await request.get(url);
+    const query = await request.get(url2);
+    // console.log(query);
     // console.log(query.response);
     const htmlResult = query && query;
     // console.log(htmlResult);
     const $ = await cheerio.load(htmlResult);
+    // console.log($(".titlestring"));
     // console.log($(".cl-result-info"));
-    $(".cl-result-info").map((i, e) => {
-      console.log(i);
-      const title = $(e)
-        // .children(".title-blob")
-        // .children(".titlestring")
-        .find(".titlestring")
-        .text();
-      console.log(title);
+    // console.log($(".thumb-result-container"));
+    $(".result-info").each(function (i, e) {
+      // console.log(i);
+      const resultTitle = $(e)
+        .children(".result-heading")
+        .children(".result-title");
+      // .find(".titlestring")
+      // .text();
+      const title = resultTitle.text();
+      const url = resultTitle.attr("href");
+      const foundDate = $(e).children(".result-date").attr("datetime");
+      const datePosted = foundDate && new Date(foundDate);
+      const neighborhood = $(e)
+        .find(".result-hood")
+        .text()
+        .trim()
+        .replace("(", "")
+        .replace(")", "");
+      console.log(neighborhood);
+      const scrapeResult = { title, url, datePosted, neighborhood };
+      scrapeResults.push(scrapeResult);
     });
+    // console.log(scrapeResults);
+    return scrapeResults;
   } catch (error: any) {
     console.log(error.message);
   }
+}
+
+async function scrapeDescription(jobWithHeaders: any[]) {
+  await Promise.all(
+    jobWithHeaders.map(async (i, e) => {
+      const htmlResult = await result.get(job.url);
+    })
+  );
+}
+
+async function scrapeCraigsList() {
+  const jobWithHeaders = await scrapeJobHeader();
+  const jobFullData =
+    jobWithHeaders && (await scrapeDescription(jobWithHeaders));
 }
 
 scrapeCraigsList();
