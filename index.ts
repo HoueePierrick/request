@@ -63,9 +63,10 @@ async function scrapeJobHeader() {
 
 async function scrapeDescription(jobWithHeaders: any[]) {
   await Promise.all(
-    jobWithHeaders.map(async (i, e) => {
-      const htmlResult = await result.get(job.url);
+    jobWithHeaders.map(async (e, i) => {
+      const htmlResult = await request.get(e.url);
     })
+    // $(".print-qrcode-container").remove() to remove an element from the page
   );
 }
 
