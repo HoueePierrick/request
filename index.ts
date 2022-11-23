@@ -67,6 +67,7 @@ async function scrapeDescription(jobWithHeaders: any[]) {
       const htmlResult = await request.get(e.url);
     })
     // $(".print-qrcode-container").remove() to remove an element from the page
+    // $("#postingbody").text() to get the content
   );
 }
 
