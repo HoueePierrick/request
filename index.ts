@@ -25,7 +25,9 @@ const url2 = "https://bangkok.craigslist.org/search/jjj?areaAbb=bangkok";
 
 async function scrapeJobHeader() {
   try {
-    const query = await request.get(url2);
+    const query = await request.get(
+      `http://api.scraperapi.com/?api_key=${process.env.SCRAPE_API_KEY}&url=${url2}`
+    );
     // console.log(query);
     // console.log(query.response);
     const htmlResult = query && query;
@@ -51,7 +53,7 @@ async function scrapeJobHeader() {
         .trim()
         .replace("(", "")
         .replace(")", "");
-      console.log(neighborhood);
+      // console.log(neighborhood);
       const scrapeResult = { title, url, datePosted, neighborhood };
       scrapeResults.push(scrapeResult);
     });
@@ -72,6 +74,10 @@ async function scrapeDescription(jobWithHeaders: any[]) {
       $(".print-qrcode-container").remove();
       // $("#postingbody").text() to get the content
       e.jobDescription = $("#postingbody").text();
+      // children().first() to select the first child
+      let compensation = $(".attrgroup").children().first().text();
+      e.compensation = compensation.replace("compensation: ", "");
+      // console.log(e);
       return e;
     })
   );
@@ -84,4 +90,4 @@ async function scrapeCraigsList() {
   console.log(jobFullData);
 }
 
-// scrapeCraigsList();
+scrapeCraigsList();
