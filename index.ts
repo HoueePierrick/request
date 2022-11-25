@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import Listing from "./models/Listing.js";
 import { oneResult } from "./models/Listing.js";
+import sleep from "./sleep.js";
 
 dotenv.config();
 
@@ -64,10 +65,15 @@ async function scrapeJobHeader() {
 async function scrapeDescription(jobWithHeaders: any[]) {
   await Promise.all(
     jobWithHeaders.map(async (e, i) => {
+      sleep(1000);
       const htmlResult = await request.get(e.url);
+      const $ = await cheerio.load(htmlResult);
+      // $(".print-qrcode-container").remove() to remove an element from the page
+      $(".print-qrcode-container").remove();
+      // $("#postingbody").text() to get the content
+      e.jobDescription = $("#postingbody").text();
+      return e;
     })
-    // $(".print-qrcode-container").remove() to remove an element from the page
-    // $("#postingbody").text() to get the content
   );
 }
 
@@ -75,6 +81,7 @@ async function scrapeCraigsList() {
   const jobWithHeaders = await scrapeJobHeader();
   const jobFullData =
     jobWithHeaders && (await scrapeDescription(jobWithHeaders));
+  console.log(jobFullData);
 }
 
-scrapeCraigsList();
+// scrapeCraigsList();
