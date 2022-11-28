@@ -53,7 +53,7 @@ async function scrapeJobHeader() {
         .trim()
         .replace("(", "")
         .replace(")", "");
-      console.log(neighborhood);
+      // console.log(neighborhood);
       const scrapeResult = { title, url, datePosted, neighborhood };
       scrapeResults.push(scrapeResult);
     });
@@ -74,6 +74,10 @@ async function scrapeDescription(jobWithHeaders: any[]) {
       $(".print-qrcode-container").remove();
       // $("#postingbody").text() to get the content
       e.jobDescription = $("#postingbody").text();
+      // children().first() to select the first child
+      let compensation = $(".attrgroup").children().first().text();
+      e.compensation = compensation.replace("compensation: ", "");
+      // console.log(e);
       return e;
     })
   );
