@@ -1,5 +1,10 @@
 // Used to download pages
 import request from "request-promise";
+// Adding a proxy
+import fs from "fs";
+const usedRequest = request.defaults({
+  proxy: "173.245.49.41:80",
+});
 // Alternative
 import axios from "axios";
 import cheerio from "cheerio";
@@ -27,6 +32,7 @@ async function scrapeJobHeader() {
   try {
     const query = await request.get(
       `http://api.scraperapi.com/?api_key=${process.env.SCRAPE_API_KEY}&url=${url2}`
+      // url2
     );
     // console.log(query);
     // console.log(query.response);
@@ -67,18 +73,22 @@ async function scrapeJobHeader() {
 async function scrapeDescription(jobWithHeaders: any[]) {
   await Promise.all(
     jobWithHeaders.map(async (e, i) => {
-      sleep(1000);
-      const htmlResult = await request.get(e.url);
-      const $ = await cheerio.load(htmlResult);
-      // $(".print-qrcode-container").remove() to remove an element from the page
-      $(".print-qrcode-container").remove();
-      // $("#postingbody").text() to get the content
-      e.jobDescription = $("#postingbody").text();
-      // children().first() to select the first child
-      let compensation = $(".attrgroup").children().first().text();
-      e.compensation = compensation.replace("compensation: ", "");
-      // console.log(e);
-      return e;
+      try {
+        sleep(1000);
+        const htmlResult = await request.get(e.url);
+        const $ = await cheerio.load(htmlResult);
+        // $(".print-qrcode-container").remove() to remove an element from the page
+        $(".print-qrcode-container").remove();
+        // $("#postingbody").text() to get the content
+        e.jobDescription = $("#postingbody").text();
+        // children().first() to select the first child
+        let compensation = $(".attrgroup").children().first().text();
+        e.compensation = compensation.replace("compensation: ", "");
+        // console.log(e);
+        return e;
+      } catch (error) {
+        console.error(error);
+      }
     })
   );
 }
