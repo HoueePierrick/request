@@ -34,6 +34,7 @@ async function scrapeJobHeader() {
       `http://api.scraperapi.com/?api_key=${process.env.SCRAPE_API_KEY}&url=${url2}`
       // url2
     );
+    console.log(query);
     // console.log(query);
     // console.log(query.response);
     const htmlResult = query && query;
@@ -85,6 +86,7 @@ async function scrapeDescription(jobWithHeaders: any[]) {
         let compensation = $(".attrgroup").children().first().text();
         e.compensation = compensation.replace("compensation: ", "");
         // console.log(e);
+        console.log(e);
         return e;
       } catch (error) {
         console.error(error);
@@ -100,4 +102,5 @@ async function scrapeCraigsList() {
   console.log(jobFullData);
 }
 
-scrapeCraigsList();
+scrapeJobHeader();
+// scrapeCraigsList();
