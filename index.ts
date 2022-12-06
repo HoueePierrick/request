@@ -14,6 +14,9 @@ import Listing from "./models/Listing.js";
 import { finalResult, firstResult } from "./models/Listing.js";
 import sleep from "./sleep.js";
 
+// Package converting object array to CSV
+import ObjectsToCsv from "objects-to-csv";
+
 dotenv.config();
 
 async function connectToMongoDB() {
@@ -53,6 +56,7 @@ async function scrapeJobHeader() {
       const title = resultTitle.text();
       let url: string = resultTitle.attr("href")!;
       const foundDate = $(e).children(".result-date").attr("datetime")!;
+      // In CSVs, the data will be in an Epoch format (long string) - remove the new Date to have it readable in GSheet
       const datePosted: Date = new Date(foundDate)!;
       const neighborhood = $(e)
         .find(".result-hood")
@@ -139,11 +143,22 @@ async function scrapeDescription(jobWithHeaders: firstResult[]) {
   }
 }
 
+async function createCSVFile(data: finalResult[]) {
+  let csv = new ObjectsToCsv(data);
+
+  // Save the file
+  await csv.toDisk("./test.csv");
+
+  // Return the CSV file as string
+  // console.log(await csv.toString());
+}
+
 async function scrapeCraigsList() {
   const jobWithHeaders: firstResult[] = await scrapeJobHeader();
   await sleep(1000);
   await scrapeDescription(jobWithHeaders);
-  console.log(finalResults);
+  // console.log(finalResults);
+  await createCSVFile(finalResults);
 }
 
 // scrapeJobHeader();
